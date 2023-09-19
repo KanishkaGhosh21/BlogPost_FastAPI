@@ -1,18 +1,16 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, EmailStr
 
 
 class UserRequest(BaseModel):
-    id: int
-    name: str
-    email: str
+    username: str
+    email: EmailStr
     password: str
-    
-    
+
+
 class UserReponse(BaseModel):
     id: int
-    name: str
-    email: str
+    username: str
+    email: EmailStr
 
 
 class NewPost(BaseModel):
@@ -20,8 +18,8 @@ class NewPost(BaseModel):
     content: str
     author: str
 
+
 class UpdatePost(BaseModel):
     title: str | None = None
     content: str | None = None
     upvotes: int | None = None
-    

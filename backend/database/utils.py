@@ -54,3 +54,31 @@ def deletePost(db, id):
         "id": id,
         "status": "deleted"
     }
+
+def addNewUser(db, user):
+    newUser=models.Users(**user.dict())
+    db.add(newUser)
+    db.commit()
+    db.refresh(newUser)
+    return newUser
+
+def deleteUser(db,id):
+    user=db.query(models.Users).filter(models.Users.id == id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="No users found")
+    db.delete(user)
+    db.commit()
+    return {
+        "id": id,
+        "status": "deleted"
+    }
+
+def getAllUsers(db):
+    users=db.query(models.Users).all()
+    return users
+
+def getUsersWithId(db,id):
+    user=db.query(models.Users).filter(models.Users.id == id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="No users found")
+    return user
