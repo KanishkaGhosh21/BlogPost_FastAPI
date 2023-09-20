@@ -1,6 +1,16 @@
 from datetime import datetime
 from fastapi import HTTPException
 from backend.database import models
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
 
 def readAllPosts(db):
@@ -56,6 +66,8 @@ def deletePost(db, id):
     }
 
 def addNewUser(db, user):
+    hashedPassword=get_password_hash(user.password)
+    user.password=hashedPassword
     newUser=models.Users(**user.dict())
     db.add(newUser)
     db.commit()
@@ -82,3 +94,4 @@ def getUsersWithId(db,id):
     if not user:
         raise HTTPException(status_code=404, detail="No users found")
     return user
+
