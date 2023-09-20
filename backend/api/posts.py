@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from backend.api.outh import get_current_user
 from backend.database import models
 
 from backend.database.db import SessionLocal,get_db
@@ -22,17 +23,17 @@ def get_post_with_id(id:int,db: SessionLocal = Depends(get_db)):
 
 
 @router.post("/")
-def create_post(post:schemas.NewPost,db: SessionLocal = Depends(get_db)):
+def create_post(post:schemas.NewPost,db: SessionLocal = Depends(get_db), username: schemas.TokenData = Depends(get_current_user)):
     newPost=createPost(db,post)
     return newPost
 
 
 @router.put("/{id}")
-def update_post(id:int,post:schemas.UpdatePost,db: SessionLocal = Depends(get_db)):
+def update_post(id:int,post:schemas.UpdatePost,db: SessionLocal = Depends(get_db), username: schemas.TokenData = Depends(get_current_user)):
     updatedPost=updatePost(db,id,post)
     return updatedPost
 
 
 @router.delete("/{id}")
-def delete_post(id:int,db: SessionLocal = Depends(get_db)):
+def delete_post(id:int,db: SessionLocal = Depends(get_db), username: schemas.TokenData = Depends(get_current_user)):
     return deletePost(db,id)    
