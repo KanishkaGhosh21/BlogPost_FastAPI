@@ -4,6 +4,7 @@ from backend.database import models
 from backend.database.db import engine
 from backend.api import users
 from backend.api import posts
+from backend.config import Settings
 
 
 app = FastAPI()
@@ -13,6 +14,7 @@ app = FastAPI()
 async def root():
     return {"server": "OK"}
 
+print(Settings)
 
 
 app.include_router(users.router)
