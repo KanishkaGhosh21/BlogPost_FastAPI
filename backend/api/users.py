@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
-from backend.api.outh import authenticate_user, create_access_token
+from backend.api.outh import authenticate_user, create_access_token, get_current_user
 
-from backend.api.schemas import UserLogin, UserReponse, UserRequest, Token
+from backend.api.schemas import TokenData, UserLogin, UserReponse, UserRequest, Token
 from backend.database.db import SessionLocal, get_db
 from backend.database.utils import addNewUser, deleteUser, getAllUsers, getUsersWithId
 
@@ -24,8 +24,8 @@ def add_users(user:UserRequest, db: SessionLocal = Depends(get_db)):
     return newUser
 
 @router.delete("/{id}")
-def delete_users(id:int,db:SessionLocal=Depends(get_db)):
-    return deleteUser(db,id)
+def delete_users(id:int,db:SessionLocal=Depends(get_db),userdata:TokenData=Depends(get_current_user)):
+    return deleteUser(db,id,userdata.userid)
 
 @router.post("/login",response_model=Token)
 def login(credentials:UserLogin, db:SessionLocal=Depends(get_db)):

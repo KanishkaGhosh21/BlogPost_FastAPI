@@ -78,10 +78,12 @@ def addNewUser(db, user):
     db.refresh(newUser)
     return newUser
 
-def deleteUser(db,id):
+def deleteUser(db,id,user_id):
     user=db.query(models.Users).filter(models.Users.id == id).first()
     if not user:
         raise HTTPException(status_code=404, detail="No users found")
+    if user.id != user_id:
+        raise HTTPException(status_code=401, detail="Not authorized to delete this user")
     db.delete(user)
     db.commit()
     return {
