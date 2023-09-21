@@ -30,12 +30,12 @@ def create_post(post:schemas.NewPost,db: SessionLocal = Depends(get_db), user_da
     return newPost
 
 
-@router.put("/{id}",response_model=schemas.PostResponse)
+@router.put("/{post_id}",response_model=schemas.PostResponse)
 def update_post(post_id:int,post:schemas.UpdatePost,db: SessionLocal = Depends(get_db), user_data: schemas.TokenData = Depends(get_current_user)):
     updatedPost=updatePost(db,post_id,post,user_data.userid)
     return updatedPost
 
 
-@router.delete("/{id}",response_model=schemas.DeletePostResponse)
-def delete_post(id:int,db: SessionLocal = Depends(get_db), username: schemas.TokenData = Depends(get_current_user)):
-    return deletePost(db,id)    
+@router.delete("/{post_id}",response_model=schemas.DeletePostResponse)
+def delete_post(post_id:int,db: SessionLocal = Depends(get_db), user_data: schemas.TokenData = Depends(get_current_user)):
+    return deletePost(db,post_id,user_data.userid)    

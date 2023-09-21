@@ -1,5 +1,6 @@
 from datetime import datetime
 from fastapi import HTTPException
+from sqlalchemy import and_
 from backend.database import models
 from passlib.context import CryptContext
 
@@ -37,9 +38,11 @@ def createPost(db, post,user_id):
     return newPost
 
 def updatePost(db, id, post,user_id):
-    oldPost=db.query(models.Posts).filter(models.Posts.id == id and models.Posts.author_id==user_id).first()
+    oldPost=db.query(models.Posts).filter(models.Posts.id == id).first()
     if not oldPost:
         raise HTTPException(status_code=404, detail="No posts found")
+    if oldPost.author_id != user_id:
+        raise HTTPException(status_code=401, detail="Not authorized to update this post")
     newPost=oldPost
     isUpdated=False
     for var, value in vars(post).items():
@@ -54,9 +57,11 @@ def updatePost(db, id, post,user_id):
 
 
 def deletePost(db, id, user_id):
-    post=db.query(models.Posts).filter(models.Posts.id == id and models.Posts.author_id==user_id).first()
+    post=db.query(models.Posts).filter(models.Posts.id == id).first()
     if not post:
         raise HTTPException(status_code=404, detail="No posts found")
+    if post.author_id != user_id:
+        raise HTTPException(status_code=401, detail="Not authorized to delete this post")
     db.delete(post)
     db.commit()
     return {
