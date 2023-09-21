@@ -10,7 +10,7 @@ class Posts(Base):
     id = Column(Integer, primary_key=True, nullable=False, index=True)
     title = Column(String)
     content = Column(String)
-    author_id = Column(Integer, ForeignKey('users.id', onupdate="CASCADE"),nullable=False)
+    author_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"),nullable=False)
     upvotes = Column(Integer,server_default="0")
     created_at = Column(TIMESTAMP(timezone=True),nullable=False,server_default=text("now()"))
     updated_at = Column(TIMESTAMP(timezone=True),nullable=False,server_default=text("now()"))
