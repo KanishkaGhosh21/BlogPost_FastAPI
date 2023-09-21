@@ -16,10 +16,7 @@ def get_password_hash(password):
 def readAllPosts(db):
     posts = db.query(models.Posts).all()
     if not posts:
-        return {
-            "status": "success", 
-            "details": "No posts found."
-        }
+        raise HTTPException(status_code=404, detail="No posts found")
     return posts
 
 
@@ -30,15 +27,17 @@ def readPostID(db, id):
     return post
 
 
-def createPost(db, post):
-    newPost=models.Posts(**post.dict())
+def createPost(db, post,user_id):
+    post=post.dict()
+    post["author_id"]=user_id
+    newPost=models.Posts(**post)
     db.add(newPost)
     db.commit()
     db.refresh(newPost)
     return newPost
 
-def updatePost(db, id, post):
-    oldPost=db.query(models.Posts).filter(models.Posts.id == id).first()
+def updatePost(db, id, post,user_id):
+    oldPost=db.query(models.Posts).filter(models.Posts.id == id and models.Posts.author_id==user_id).first()
     if not oldPost:
         raise HTTPException(status_code=404, detail="No posts found")
     newPost=oldPost
@@ -54,8 +53,8 @@ def updatePost(db, id, post):
     return newPost
 
 
-def deletePost(db, id):
-    post=db.query(models.Posts).filter(models.Posts.id == id).first()
+def deletePost(db, id, user_id):
+    post=db.query(models.Posts).filter(models.Posts.id == id and models.Posts.author_id==user_id).first()
     if not post:
         raise HTTPException(status_code=404, detail="No posts found")
     db.delete(post)

@@ -16,14 +16,14 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
-def authenticate_user(email, password, db)->TokenData:
+def authenticate_user(email, password, db):
     user=db.query(Users).filter(Users.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
     if not verify_password(password, user.password):
         raise HTTPException(status_code=400, detail="Incorrect password")
-    return TokenData(username=user.username)
+    return TokenData(userid=user.id)
     
 def create_access_token(data: dict):
     to_encode = data.copy()
@@ -46,11 +46,12 @@ async def get_current_user(token: str=Depends(oauth2_scheme)):
 def verify_access_token(token:str,credentials_exception:HTTPException):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("username")
-        if username is None:
+        print(payload)
+        user_id: str = payload.get("userid")
+        if user_id is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = TokenData(userid=user_id)
     except JWTError:
         raise credentials_exception
     
-    return username
+    return token_data
